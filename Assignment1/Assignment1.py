@@ -37,13 +37,21 @@ def visualiseCameraCalibration3D(data, P):
     new = predPnts(data, P)
     plt.plot(new[:,0],new[:,1], 'r*', data[:,-2], data[:,-1], 'b*')
     plt.show()
-    return new
 
 def evaluateCameraCalibration3D(data, P):
     new = predPnts(data, P)
+    orig = data[:,-2:]
+    dist = (new-orig)**2
+    dist = dist.sum(axis=-1)
+    dist = np.sqrt(dist)
+    print "Mean: %s" % (np.mean(dist))
+    print "Variance: %s" % (np.var(dist))
+    print "Minimum: %s" % (dist.min())
+    print "Maximum: %s" % (dist.max())
 
 
 data = np.loadtxt('data.txt')
 P = calibrateCamera3D(data)
 print P
-print visualiseCameraCalibration3D(data, P)
+visualiseCameraCalibration3D(data, P)
+evaluateCameraCalibration3D(data, P)
