@@ -13,13 +13,8 @@ def draw(img, corners, imgpts):
 
 
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
-objp = np.zeros((6*9,3), np.float32)
-objp[:,:2] = np.mgrid[0:9,0:6].T.reshape(-1,2)
-
 axis = np.float32([[3,0,0], [0,3,0], [0,0,-3]]).reshape(-1,3)
 
-
-    
 # termination criteria
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
@@ -29,12 +24,18 @@ HEIGHT = 9
 # prepare object points, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
 objp = np.zeros((WIDTH*HEIGHT,3), np.float32)
 objp[:,:2] = np.mgrid[0:HEIGHT,0:WIDTH].T.reshape(-1,2)
+objp = objp * 100
 
 cap = cv2.VideoCapture(0)
 with np.load("antiwarp.npz") as X:
     mtx, dist, _, _ = [X[i] for i in ('mtx','dist','rvecs','tvecs')]
-jake = cv2.imread("jake.jpg")
-#jake = cv2.resize(jake1, (HEIGHT,WIDTH))
+    
+jake1 = cv2.imread("jake.jpg")
+jake = cv2.resize(jake1, ((HEIGHT-1)*100,(WIDTH-1)*100))
+
+white1 = cv2.imread("white.jpg")
+white = cv2.resize(white1, ((HEIGHT-1)*100,(WIDTH-1)*100))
+
 while cv2.waitKey(1) & 0xFF != ord('q'):
         #capture a frame
         ret, img = cap.read()
@@ -50,23 +51,21 @@ while cv2.waitKey(1) & 0xFF != ord('q'):
         if ret:
             cv2.cornerSubPix(gray,corners,(11,11),(-1,-1),criteria)
             
-            # Draw and display the corners
-            cv2.drawChessboardCorners(undst, (HEIGHT,WIDTH), corners,ret)
+            #Draw and display the corners
+            #cv2.drawChessboardCorners(undst, (HEIGHT,WIDTH), corners,ret)
             rvecs, tvecs, inliers = cv2.solvePnPRansac(objp, corners, mtx, dist)
             imgpts, jac = cv2.projectPoints(axis, rvecs, tvecs, mtx, dist)
-            #undst = draw(undst,corners,imgpts)
+            undst = draw(undst,corners,imgpts)
 
-            #proj = calibrateCamera3D(objp,corners)
-            #proj = np.delete(proj,2,1)
-            test = np.array([[0,0],[w,0],[w,h],[0,h]])
-            test1 = np.array([[corners[0]],[corners[8]],[corners[53]],[corners[44]]])
-            proj = cv2.getPerspectiveTransform(test1, test);
+            proj = calibrateCamera3D(objp,corners)
+
             jakewarp = cv2.warpPerspective(jake, proj, (w,h))
-            cv2.imshow('jake', jakewarp)
-            cv2.waitKey(2000)
-        cv2.imshow('img',undst)      
+            whitewarp = cv2.bitwise_not(cv2.warpPerspective(white, proj, (w,h)));
+            undst = cv2.bitwise_and(undst, whitewarp)
+            undst += jakewarp  
+        	  
+        cv2.imshow('img',undst)
 
-        
 # release everything
 cap.release()
 cv2.destroyAllWindows()

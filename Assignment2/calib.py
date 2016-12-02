@@ -2,6 +2,8 @@ import numpy as np
 
 
 def calibrateCamera3D(objp,imgp):
+    objp = np.delete(objp,2,1)
+    print objp
     arr = np.repeat(objp, 2, axis=0)
     arr = np.hstack((arr, np.ones((arr.shape[0], 1))))
     xs = -imgp[:,0,0]
@@ -21,6 +23,6 @@ def calibrateCamera3D(objp,imgp):
     eig_val, eig_vect = np.linalg.eig(AtA)
     eig_vect = eig_vect.transpose()
     print eig_vect
-
-    return np.vstack(np.split(eig_vect[-4],3))
+    
+    return np.vstack(np.split(eig_vect[-1],3))
 
