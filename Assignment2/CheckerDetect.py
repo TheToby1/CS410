@@ -4,17 +4,6 @@ import numpy as np
 import cv2
 from calib import *
 
-def draw(img, corners, imgpts):
-    corner = tuple(corners[0].ravel())
-    cv2.line(img, corner, tuple(imgpts[0].ravel()), (255,0,0), 5)
-    cv2.line(img, corner, tuple(imgpts[1].ravel()), (0,255,0), 5)
-    cv2.line(img, corner, tuple(imgpts[2].ravel()), (0,0,255), 5)
-    return img
-
-
-criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
-axis = np.float32([[3,0,0], [0,3,0], [0,0,-3]]).reshape(-1,3)
-
 # termination criteria
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
@@ -53,9 +42,6 @@ while cv2.waitKey(1) & 0xFF != ord('q'):
             
             #Draw and display the corners
             #cv2.drawChessboardCorners(undst, (HEIGHT,WIDTH), corners,ret)
-            rvecs, tvecs, inliers = cv2.solvePnPRansac(objp, corners, mtx, dist)
-            imgpts, jac = cv2.projectPoints(axis, rvecs, tvecs, mtx, dist)
-            undst = draw(undst,corners,imgpts)
 
             proj = calibrateCamera3D(objp,corners)
 
