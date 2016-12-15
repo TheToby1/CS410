@@ -40,7 +40,8 @@ cwidth = (WIDTH-1)*100
 
 jake1 = cv2.imread("jake.jpg")
 jake = cv2.resize(jake1, (100,100))
-jakeside = cv2.resize(jake1, (100,100))
+rob1 = cv2.imread("rob.jpg")
+rob = cv2.resize(rob1, (100,100))
 
 white1 = cv2.imread("white.jpg")
 white = cv2.resize(white1, (100,100))
@@ -72,31 +73,44 @@ while cv2.waitKey(1) & 0xFF != ord('q'):
             #Draw and display the corners
             #cv2.drawChessboardCorners(undst, (HEIGHT,WIDTH), corners,ret)
             pts = np.copy(imgpts[:4,1])
-            print pts
             temp = pts[0]
             pts[0] = pts[0]+pts[1]
             pts[1] = pts[1]+pts[2]
             pts[2] = pts[2]+pts[3]
             pts[3] = pts[3]+temp
-            print pts
             order = pts.argsort()
-            print order
             for i in range(0,4):
                 num1 = order[i]
                 if num1==0:
                     cubecorn = np.array((imgpts[4],imgpts[5],imgpts[0],imgpts[1])).reshape(4,1,2)
+                    proj = calibrateCamera3D(cube3d,cubecorn)
+                    jakewarp = cv2.warpPerspective(rob, proj, (w,h))
+                    whitewarp = cv2.bitwise_not(cv2.warpPerspective(white, proj, (w,h)));
+                    undst = cv2.bitwise_and(undst, whitewarp)
+                    undst += jakewarp
                 elif num1==1:
                     cubecorn = np.array((imgpts[5],imgpts[6],imgpts[1],imgpts[2])).reshape(4,1,2)
+                    proj = calibrateCamera3D(cube3d,cubecorn)
+                    jakewarp = cv2.warpPerspective(jake, proj, (w,h))
+                    whitewarp = cv2.bitwise_not(cv2.warpPerspective(white, proj, (w,h)));
+                    undst = cv2.bitwise_and(undst, whitewarp)
+                    undst += jakewarp
                 elif num1==2:
                     cubecorn = np.array((imgpts[6],imgpts[7],imgpts[2],imgpts[3])).reshape(4,1,2)
+                    proj = calibrateCamera3D(cube3d,cubecorn)
+                    jakewarp = cv2.warpPerspective(rob, proj, (w,h))
+                    whitewarp = cv2.bitwise_not(cv2.warpPerspective(white, proj, (w,h)));
+                    undst = cv2.bitwise_and(undst, whitewarp)
+                    undst += jakewarp
                 elif num1==3:
                     cubecorn = np.array((imgpts[7],imgpts[4],imgpts[3],imgpts[0])).reshape(4,1,2)
+                    proj = calibrateCamera3D(cube3d,cubecorn)
+                    jakewarp = cv2.warpPerspective(jake, proj, (w,h))
+                    whitewarp = cv2.bitwise_not(cv2.warpPerspective(white, proj, (w,h)));
+                    undst = cv2.bitwise_and(undst, whitewarp)
+                    undst += jakewarp
 
-                proj = calibrateCamera3D(cube3d,cubecorn)
-                jakewarp = cv2.warpPerspective(jake, proj, (w,h))
-                whitewarp = cv2.bitwise_not(cv2.warpPerspective(white, proj, (w,h)));
-                undst = cv2.bitwise_and(undst, whitewarp)
-                undst += jakewarp
+                
  
         cv2.imshow('img',undst)
 
