@@ -181,12 +181,9 @@ def jakeCube():
     cheight = (HEIGHT-1)*reso
     cwidth = (WIDTH-1)*reso
 
-    jake = cv2.resize(cv2.imread("jake.jpg"), (cheight,cwidth))
-    rob = cv2.resize(cv2.imread("rob.jpg"), (cwidth,cwidth))
-
-    whiteorig = cv2.imread("white.jpg")
-    white = cv2.resize(whiteorig, (cheight,cwidth))
-    whiteside = cv2.resize(whiteorig, (cwidth,cwidth))
+    jake = cv2.resize(cv2.imread("jake.jpg"), (reso,reso))
+    rob = cv2.resize(cv2.imread("rob.jpg"), (reso,reso))
+    white = cv2.resize(cv2.imread("white.jpg"), (reso,reso))
 
     axis = np.float32([[0,0,0], [0,cwidth,0], [cheight,cwidth,0], [cheight,0,0],
                        [0,0,-cwidth],[0,cwidth,-cwidth],[cheight,cwidth,-cwidth],[cheight,0,-cwidth]])
@@ -258,4 +255,6 @@ def jakeCube():
     cap.release()
     cv2.destroyAllWindows()
 
+print "******Press q to see actual assignment*******"
 jakeCube()
+projImage()
