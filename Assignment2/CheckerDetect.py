@@ -17,7 +17,7 @@ objp = objp * 100
 
 cap = cv2.VideoCapture(0)
 with np.load("antiwarp.npz") as X:
-    mtx, dist, _, _ = [X[i] for i in ('mtx','dist','rvecs','tvecs')]
+    mtx, dist = [X[i] for i in ('mtx','dist')]
     
 jake1 = cv2.imread("jake.jpg")
 jake = cv2.resize(jake1, ((HEIGHT-1)*100,(WIDTH-1)*100))

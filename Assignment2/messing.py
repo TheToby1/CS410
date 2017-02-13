@@ -33,7 +33,7 @@ cube3d = cube3d * 100
 
 cap = cv2.VideoCapture(0)
 with np.load("antiwarp.npz") as X:
-    mtx, dist, _, _ = [X[i] for i in ('mtx','dist','rvecs','tvecs')]
+    mtx, dist = [X[i] for i in ('mtx','dist')]
 
 cheight = (HEIGHT-1)*100
 cwidth = (WIDTH-1)*100
